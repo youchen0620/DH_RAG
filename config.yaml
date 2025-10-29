@@ -1,0 +1,91 @@
+google:
+  api_key: "${GOOGLE_API_KEY}" # 可從 .env 讀取
+  model: "gemini-2.5-flash" # 可選: gemini-2.0-flash | gemini-2.5-flash | gemini-2.0-pro
+  temperature: 0
+  max_tokens: null
+  timeout: null
+  thinking_budget: null
+  include_thoughts: true
+  response_mime_type: "application/json"
+  json_schema:
+    type: object
+    properties:
+      summary:
+        type: string
+      keywords:
+        type: array
+        items:
+          type: string
+      sources:
+        type: array
+        items:
+          type: string
+    required: ["summary"]
+
+milvus:
+  mode: "bm25"  # 可選: semantic | bm25 | hybrid
+  connection_args:
+    uri: "./milvus_test.db"
+  collection_name: "idiom_collection"
+
+  semantic:
+    text_field: "text"
+    vector_field: "dense"
+    index_params:
+      field_name: "dense"
+      index_type: "FLAT"
+      metric_type: "IP"
+
+  bm25:
+    text_field: "text"
+    vector_field: "sparse"
+    builtin_function:
+      input_field_names: "text"
+      output_field_names: "sparse"
+      analyzer_params:
+        type: "chinese"
+      enable_match: true
+    index_params:
+      - field_name: "sparse"
+        index_name: "sparse_inverted_index"
+        index_type: "SPARSE_WAND"
+        metric_type: "BM25"
+
+  hybrid:
+    text_field: "text"
+    vector_field: ["dense", "sparse"]
+    builtin_function:
+      input_field_names: "text"
+      output_field_names: "sparse"
+      analyzer_params:
+        type: "chinese"
+      enable_match: true
+    index_params:
+      - field_name: "dense"
+        index_type: "FLAT"
+        metric_type: "IP"
+      - field_name: "sparse"
+        index_name: "sparse_inverted_index"
+        index_type: "SPARSE_WAND"
+        metric_type: "BM25"
+
+retriever:
+  search_kwargs:
+    k: 5
+
+prompt:
+  template: |
+    Human: You are an AI assistant, and provides answers to questions by using fact based and statistical information when possible.
+    Use the following pieces of information to provide a concise answer to the question enclosed in <question> tags.
+    If you don't know the answer, just say that you don't know, don't try to make up an answer.
+    <context>
+    {context}
+    </context>
+
+    <question>
+    {question}
+    </question>
+
+    The response should be specific and use statistics or numbers when possible.
+
+    Assistant:
