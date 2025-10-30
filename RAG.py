@@ -81,7 +81,7 @@ retriever = vectorstore_loaded.as_retriever(search_kwargs=retriever_conf["search
 
 # ====== 定義格式化文件函數 ======
 def format_docs(docs):
-    return "\n\n".join(doc.page_content for doc in docs) # 如果要讓 LLM 讀到 metadata 資訊要修改
+    return "\n\n".join(f'["directory": {doc.metadata["directory"]}, "filename": {doc.metadata["filename"]}] {doc.page_content}' for doc in docs) # just an example
 
 # ====== 建立 RAG Chain ======
 def inspect_input(x):
