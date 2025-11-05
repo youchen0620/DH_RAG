@@ -78,6 +78,8 @@ prompt = PromptTemplate(
 # ====== 轉成 retriever ======
 retriever_conf = config["retriever"]
 retriever = vectorstore_loaded.as_retriever(search_kwargs=retriever_conf["search_kwargs"])
+if mode == "hybrid" and "hybrid_search" in retriever_conf:
+    retriever.search_kwargs.update(retriever_conf["hybrid_search"])
 
 # ====== 定義格式化文件函數 ======
 def format_docs(docs):

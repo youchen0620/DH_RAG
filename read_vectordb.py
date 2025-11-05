@@ -53,6 +53,20 @@ else:
 retriever_conf = config["retriever"]
 
 query = "告訴我一些成語的典故？"
-similar_docs = vectorstore_loaded.similarity_search_with_score(query, k=retriever_conf["search_kwargs"]["k"], expr="directory == '4000-4999'") # just an example filter
+if mode == "hybrid" and "hybrid_search" in retriever_conf:
+    similar_docs = vectorstore_loaded.similarity_search_with_score(
+        query,
+        k=retriever_conf["search_kwargs"]["k"],
+        ranker_type=retriever_conf["hybrid_search"]["ranker_type"],
+        ranker_params=retriever_conf["hybrid_search"]["ranker_params"],
+        expr="directory == '4000-4999'"  # just an example filter
+    )
+else:
+    similar_docs = vectorstore_loaded.similarity_search_with_score(
+        query,
+        k=retriever_conf["search_kwargs"]["k"],
+        expr="directory == '4000-4999'"  # just an example filter
+    )
+
 for doc in similar_docs:
     print(doc)

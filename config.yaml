@@ -72,6 +72,10 @@ milvus:
 retriever:
   search_kwargs:
     k: 5
+  hybrid_search:
+    ranker_type: "weighted"
+    ranker_params:
+      weights: [1.0, 1.0]
 
 prompt:
   template: |
